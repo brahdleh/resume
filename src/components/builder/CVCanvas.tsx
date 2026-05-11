@@ -57,10 +57,9 @@ function SummarySection({ doc }: { doc: CVDocument }) {
 interface ExpCardProps {
   exp: ReturnType<typeof useMasterStore.getState>["experiences"][number]
   doc: CVDocument
-  showCompany?: boolean
 }
 
-function ExperienceEntry({ exp, doc, showCompany = true }: ExpCardProps) {
+function ExperienceEntry({ exp, doc }: ExpCardProps) {
   const { reorderDocumentAchievements } = useCVStore()
   const sensors = useSensors(useSensor(PointerSensor))
   const selectedAchIds = doc.selectedAchievementsPerExperience[exp.id] ?? []
@@ -82,23 +81,10 @@ function ExperienceEntry({ exp, doc, showCompany = true }: ExpCardProps) {
 
   return (
     <div>
-      {showCompany && (
-        <p className="text-sm font-semibold">
-          {exp.company}{exp.location ? ` · ${exp.location}` : ""}
-        </p>
-      )}
-      <div className="flex items-baseline justify-between gap-2">
-        <p className={showCompany ? "text-xs font-medium" : "text-sm font-semibold"}>
-          {exp.role}
-          {!showCompany && exp.location && (
-            <span className="font-normal text-muted-foreground"> · {exp.location}</span>
-          )}
-        </p>
-        <p className="text-xs text-muted-foreground shrink-0">
-          {[exp.startDate, exp.endDate].filter(Boolean).join(" – ")}
-        </p>
-      </div>
-
+      <p className="text-xs font-semibold">{exp.role}</p>
+      <p className="text-xs text-muted-foreground">
+        {[exp.startDate, exp.endDate].filter(Boolean).join(" – ")}
+      </p>
       {selectedAchs.length > 0 && (
         <DndContext
           sensors={sensors}
@@ -109,7 +95,7 @@ function ExperienceEntry({ exp, doc, showCompany = true }: ExpCardProps) {
             items={selectedAchIds}
             strategy={verticalListSortingStrategy}
           >
-            <ul className="mt-2 flex flex-col gap-1">
+            <ul className="mt-1.5 flex flex-col gap-1">
               {selectedAchs.map((ach) => (
                 <SortableAchievementItem
                   key={ach.id}
@@ -153,20 +139,19 @@ function ExperienceSection({ doc }: { doc: CVDocument }) {
   }
 
   return (
-    <div className="flex flex-col gap-5">
+    <div className="flex flex-col gap-4">
       {companyOrder.map((company) => {
         const exps = grouped[company]
-        if (exps.length === 1) {
-          return <ExperienceEntry key={exps[0].id} exp={exps[0]} doc={doc} />
-        }
         return (
           <div key={company}>
-            <p className="text-sm font-semibold mb-2">{company}</p>
+            <p className="text-sm font-semibold mb-1.5">
+              {company}{exps[0].location ? ` · ${exps[0].location}` : ""}
+            </p>
             <div className="flex gap-3">
               <div className="w-px bg-muted-foreground/25 shrink-0 mt-1" />
-              <div className="flex flex-col gap-4 flex-1">
+              <div className="flex flex-col gap-3 flex-1">
                 {exps.map((exp) => (
-                  <ExperienceEntry key={exp.id} exp={exp} doc={doc} showCompany={false} />
+                  <ExperienceEntry key={exp.id} exp={exp} doc={doc} />
                 ))}
               </div>
             </div>
@@ -210,9 +195,7 @@ function SortableAchievementItem({
       </button>
       <span className="text-xs leading-relaxed before:mr-1.5 before:content-['•']">
         {content}
-        {metrics && (
-          <span className="text-muted-foreground"> — {metrics}</span>
-        )}
+        {metrics && <span> — {metrics}</span>}
       </span>
     </li>
   )
@@ -394,12 +377,7 @@ export function CVCanvas({ doc }: CVCanvasProps) {
             <h2 className="text-xl font-bold">
               {personalInfo.name || "Your Name"}
             </h2>
-            {personalInfo.title && (
-              <p className="text-sm text-muted-foreground mt-0.5">
-                {personalInfo.title}
-              </p>
-            )}
-            <div className="mt-2 flex flex-wrap items-center justify-center gap-3 text-xs text-muted-foreground">
+            <div className="mt-1.5 flex flex-wrap items-center justify-center gap-3 text-xs text-muted-foreground">
               {personalInfo.email && <span>{personalInfo.email}</span>}
               {personalInfo.phone && <span>{personalInfo.phone}</span>}
               {personalInfo.location && <span>{personalInfo.location}</span>}
@@ -407,6 +385,11 @@ export function CVCanvas({ doc }: CVCanvasProps) {
               {personalInfo.github && <span>{personalInfo.github}</span>}
               {personalInfo.website && <span>{personalInfo.website}</span>}
             </div>
+            {personalInfo.title && (
+              <p className="text-sm text-muted-foreground mt-0.5">
+                {personalInfo.title}
+              </p>
+            )}
           </div>
 
           <div className="flex flex-col gap-3 p-6">
