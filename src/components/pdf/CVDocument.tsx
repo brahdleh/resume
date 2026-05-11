@@ -11,32 +11,66 @@ import type { useMasterStore } from "@/store/masterStore"
 
 type MasterState = ReturnType<typeof useMasterStore.getState>
 
-const styles = StyleSheet.create({
+// Carlito — open-source Calibri equivalent, identical metrics/spacing.
+// TTF files served directly from the official Google Fonts GitHub repo.
+// To use real Calibri: drop calibri.ttf / calibri-bold.ttf into public/fonts/
+// and replace the src values below with "/fonts/calibri.ttf" etc.
+Font.register({
+  family: "Calibri",
+  fonts: [
+    {
+      src: "https://raw.githubusercontent.com/googlefonts/carlito/main/fonts/ttf/Carlito-Regular.ttf",
+      fontWeight: 400,
+      fontStyle: "normal",
+    },
+    {
+      src: "https://raw.githubusercontent.com/googlefonts/carlito/main/fonts/ttf/Carlito-Bold.ttf",
+      fontWeight: 700,
+      fontStyle: "normal",
+    },
+    {
+      src: "https://raw.githubusercontent.com/googlefonts/carlito/main/fonts/ttf/Carlito-Italic.ttf",
+      fontWeight: 400,
+      fontStyle: "italic",
+    },
+    {
+      src: "https://raw.githubusercontent.com/googlefonts/carlito/main/fonts/ttf/Carlito-BoldItalic.ttf",
+      fontWeight: 700,
+      fontStyle: "italic",
+    },
+  ],
+})
+
+// Unit conversions: 1 cm = 28.3465 pt
+// Top 1.5cm = 42pt | Bottom 1.3cm = 37pt | Left 1.3cm = 37pt | Right 2cm = 57pt
+const s = StyleSheet.create({
   page: {
-    fontFamily: "Helvetica",
-    fontSize: 10,
-    paddingTop: 40,
-    paddingBottom: 40,
-    paddingHorizontal: 44,
-    color: "#111827",
+    fontFamily: "Calibri",
+    fontWeight: 400,
+    fontSize: 11,
+    paddingTop: 42,
+    paddingBottom: 37,
+    paddingLeft: 37,
+    paddingRight: 57,
+    color: "#1a1a1a",
   },
+
+  // ── Header block ─────────────────────────────────────────────────────────
   header: {
-    marginBottom: 16,
-    paddingBottom: 12,
-    borderBottomWidth: 1.5,
-    borderBottomColor: "#e5e7eb",
     alignItems: "center",
+    marginBottom: 10,
   },
   name: {
-    fontSize: 22,
-    fontFamily: "Helvetica-Bold",
-    letterSpacing: 0.5,
-    marginBottom: 3,
+    fontSize: 25,
+    fontWeight: 700,
+    letterSpacing: 0.3,
+    color: "#1a1a1a",
+    marginBottom: 2,
   },
   jobTitle: {
-    fontSize: 11,
-    color: "#4b5563",
-    marginBottom: 5,
+    fontSize: 9,
+    color: "#555555",
+    marginBottom: 4,
   },
   contactRow: {
     flexDirection: "row",
@@ -46,68 +80,84 @@ const styles = StyleSheet.create({
   },
   contactItem: {
     fontSize: 9,
-    color: "#6b7280",
+    color: "#555555",
   },
+  contactSep: {
+    fontSize: 9,
+    color: "#aaaaaa",
+  },
+
+  // ── Section ──────────────────────────────────────────────────────────────
   section: {
-    marginBottom: 14,
+    marginBottom: 10,
   },
   sectionTitle: {
-    fontSize: 9,
-    fontFamily: "Helvetica-Bold",
-    textTransform: "uppercase",
-    letterSpacing: 1,
-    color: "#374151",
+    fontSize: 11,
+    fontWeight: 700,
+    color: "#1a1a1a",
     borderBottomWidth: 0.75,
-    borderBottomColor: "#d1d5db",
-    paddingBottom: 3,
-    marginBottom: 8,
+    borderBottomColor: "#999999",
+    paddingBottom: 1,
+    marginBottom: 5,
   },
+  // Summary gets no underline rule — it flows straight from the header
+  sectionTitleSummary: {
+    fontSize: 11,
+    fontWeight: 700,
+    color: "#1a1a1a",
+    marginBottom: 5,
+  },
+
+  // ── Body text ────────────────────────────────────────────────────────────
+  summaryText: {
+    fontSize: 11,
+    color: "#1a1a1a",
+    lineHeight: 1.4,
+  },
+
+  // ── Experience ───────────────────────────────────────────────────────────
   experienceItem: {
-    marginBottom: 10,
+    marginBottom: 9,
   },
   expHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "flex-start",
-    marginBottom: 1,
   },
   expRole: {
-    fontSize: 10.5,
-    fontFamily: "Helvetica-Bold",
+    fontSize: 11,
+    fontWeight: 700,
   },
   expDate: {
-    fontSize: 9,
-    color: "#6b7280",
+    fontSize: 11,
+    color: "#555555",
   },
   expCompany: {
-    fontSize: 9.5,
-    color: "#4b5563",
-    marginBottom: 4,
+    fontSize: 11,
+    color: "#555555",
+    marginBottom: 3,
   },
   bulletRow: {
     flexDirection: "row",
-    marginBottom: 2,
+    marginBottom: 1.5,
     paddingLeft: 2,
   },
   bullet: {
     width: 10,
-    fontSize: 9,
-    color: "#4b5563",
+    fontSize: 11,
+    color: "#333333",
   },
   bulletText: {
     flex: 1,
-    fontSize: 9.5,
-    color: "#1f2937",
-    lineHeight: 1.4,
+    fontSize: 11,
+    color: "#1a1a1a",
+    lineHeight: 1.35,
   },
   bulletMetrics: {
-    color: "#6b7280",
+    color: "#555555",
   },
-  summaryText: {
-    fontSize: 9.5,
-    color: "#1f2937",
-    lineHeight: 1.5,
-  },
+
+  // ── Education ────────────────────────────────────────────────────────────
   educationItem: {
     marginBottom: 7,
   },
@@ -117,48 +167,52 @@ const styles = StyleSheet.create({
     alignItems: "flex-start",
   },
   eduDegree: {
-    fontSize: 10.5,
-    fontFamily: "Helvetica-Bold",
+    fontSize: 11,
+    fontWeight: 700,
   },
   eduDate: {
-    fontSize: 9,
-    color: "#6b7280",
+    fontSize: 11,
+    color: "#555555",
   },
   eduInstitution: {
-    fontSize: 9.5,
-    color: "#4b5563",
+    fontSize: 11,
+    color: "#555555",
   },
+
+  // ── Skills ───────────────────────────────────────────────────────────────
   skillRow: {
     flexDirection: "row",
-    marginBottom: 3,
+    marginBottom: 2.5,
   },
   skillCategory: {
-    fontSize: 9.5,
-    fontFamily: "Helvetica-Bold",
-    width: 110,
-    color: "#374151",
+    fontSize: 11,
+    fontWeight: 700,
+    width: 120,
+    color: "#1a1a1a",
   },
   skillList: {
     flex: 1,
-    fontSize: 9.5,
-    color: "#1f2937",
+    fontSize: 11,
+    color: "#1a1a1a",
   },
+
+  // ── Certifications ───────────────────────────────────────────────────────
   certItem: {
     flexDirection: "row",
     justifyContent: "space-between",
     marginBottom: 4,
   },
   certName: {
-    fontSize: 9.5,
-    fontFamily: "Helvetica-Bold",
+    fontSize: 11,
+    fontWeight: 700,
   },
   certIssuer: {
-    fontSize: 9,
-    color: "#6b7280",
+    fontSize: 11,
+    color: "#555555",
   },
   certDate: {
-    fontSize: 9,
-    color: "#6b7280",
+    fontSize: 11,
+    color: "#555555",
   },
 })
 
@@ -171,9 +225,9 @@ function SummarySection({ cv, master }: Props) {
   const summary = master.summaries.find((s) => s.id === cv.selectedSummaryId)
   if (!summary) return null
   return (
-    <View style={styles.section}>
-      <Text style={styles.sectionTitle}>Professional Summary</Text>
-      <Text style={styles.summaryText}>{summary.content}</Text>
+    <View style={s.section}>
+      <Text style={s.sectionTitleSummary}>SUMMARY</Text>
+      <Text style={s.summaryText}>{summary.content}</Text>
     </View>
   )
 }
@@ -186,8 +240,8 @@ function ExperienceSection({ cv, master }: Props) {
   if (selected.length === 0) return null
 
   return (
-    <View style={styles.section}>
-      <Text style={styles.sectionTitle}>Experience</Text>
+    <View style={s.section}>
+      <Text style={s.sectionTitle}>EXPERIENCE</Text>
       {selected.map((exp) => {
         const achIds = cv.selectedAchievementsPerExperience[exp.id] ?? []
         const achs = achIds
@@ -195,24 +249,24 @@ function ExperienceSection({ cv, master }: Props) {
           .filter(Boolean) as typeof exp.achievements
 
         return (
-          <View key={exp.id} style={styles.experienceItem}>
-            <View style={styles.expHeader}>
-              <Text style={styles.expRole}>{exp.role}</Text>
-              <Text style={styles.expDate}>
+          <View key={exp.id} style={s.experienceItem}>
+            <View style={s.expHeader}>
+              <Text style={s.expRole}>{exp.role}</Text>
+              <Text style={s.expDate}>
                 {exp.startDate} – {exp.endDate}
               </Text>
             </View>
-            <Text style={styles.expCompany}>
+            <Text style={s.expCompany}>
               {exp.company}
-              {exp.location ? ` · ${exp.location}` : ""}
+              {exp.location ? `  ·  ${exp.location}` : ""}
             </Text>
             {achs.map((ach) => (
-              <View key={ach.id} style={styles.bulletRow}>
-                <Text style={styles.bullet}>•</Text>
-                <Text style={styles.bulletText}>
+              <View key={ach.id} style={s.bulletRow}>
+                <Text style={s.bullet}>•</Text>
+                <Text style={s.bulletText}>
                   {ach.content}
                   {ach.metrics ? (
-                    <Text style={styles.bulletMetrics}> — {ach.metrics}</Text>
+                    <Text style={s.bulletMetrics}>{"  "}— {ach.metrics}</Text>
                   ) : null}
                 </Text>
               </View>
@@ -231,21 +285,21 @@ function EducationSection({ cv, master }: Props) {
   if (selected.length === 0) return null
 
   return (
-    <View style={styles.section}>
-      <Text style={styles.sectionTitle}>Education</Text>
+    <View style={s.section}>
+      <Text style={s.sectionTitle}>EDUCATION</Text>
       {selected.map((edu) => (
-        <View key={edu.id} style={styles.educationItem}>
-          <View style={styles.eduHeader}>
-            <Text style={styles.eduDegree}>
+        <View key={edu.id} style={s.educationItem}>
+          <View style={s.eduHeader}>
+            <Text style={s.eduDegree}>
               {edu.degree} in {edu.field}
             </Text>
-            <Text style={styles.eduDate}>
+            <Text style={s.eduDate}>
               {edu.startDate} – {edu.endDate}
             </Text>
           </View>
-          <Text style={styles.eduInstitution}>
+          <Text style={s.eduInstitution}>
             {edu.institution}
-            {edu.grade ? ` · ${edu.grade}` : ""}
+            {edu.grade ? `  ·  ${edu.grade}` : ""}
           </Text>
         </View>
       ))}
@@ -268,13 +322,13 @@ function SkillsSection({ cv, master }: Props) {
   )
 
   return (
-    <View style={styles.section}>
-      <Text style={styles.sectionTitle}>Skills</Text>
+    <View style={s.section}>
+      <Text style={s.sectionTitle}>SKILLS</Text>
       {Object.entries(grouped).map(([cat, catSkills]) => (
-        <View key={cat} style={styles.skillRow}>
-          <Text style={styles.skillCategory}>{cat}:</Text>
-          <Text style={styles.skillList}>
-            {catSkills.map((s) => s.name).join(", ")}
+        <View key={cat} style={s.skillRow}>
+          <Text style={s.skillCategory}>{cat}</Text>
+          <Text style={s.skillList}>
+            {catSkills.map((sk) => sk.name).join(", ")}
           </Text>
         </View>
       ))}
@@ -289,22 +343,22 @@ function CertificationsSection({ cv, master }: Props) {
   if (selected.length === 0) return null
 
   return (
-    <View style={styles.section}>
-      <Text style={styles.sectionTitle}>Certifications</Text>
+    <View style={s.section}>
+      <Text style={s.sectionTitle}>CERTIFICATIONS</Text>
       {selected.map((cert) => (
-        <View key={cert.id} style={styles.certItem}>
+        <View key={cert.id} style={s.certItem}>
           <View>
-            <Text style={styles.certName}>{cert.name}</Text>
-            <Text style={styles.certIssuer}>{cert.issuer}</Text>
+            <Text style={s.certName}>{cert.name}</Text>
+            <Text style={s.certIssuer}>{cert.issuer}</Text>
           </View>
-          <Text style={styles.certDate}>{cert.date}</Text>
+          <Text style={s.certDate}>{cert.date}</Text>
         </View>
       ))}
     </View>
   )
 }
 
-const sectionMap: Record<
+const SECTION_RENDERERS: Record<
   string,
   (props: Props) => React.ReactElement | null
 > = {
@@ -325,35 +379,32 @@ export function CVPDFDocument({ cv, master }: Props) {
     personalInfo.linkedin,
     personalInfo.github,
     personalInfo.website,
-  ].filter(Boolean)
+  ].filter(Boolean) as string[]
 
   return (
-    <Document
-      title={cv.name}
-      author={personalInfo.name}
-      creator="CV Studio"
-    >
-      <Page size="A4" style={styles.page}>
-        {/* Header */}
-        <View style={styles.header}>
-          <Text style={styles.name}>{personalInfo.name || "Your Name"}</Text>
+    <Document title={cv.name} author={personalInfo.name} creator="CV Studio">
+      <Page size="A4" style={s.page}>
+        {/* ── Header ── */}
+        <View style={s.header}>
+          <Text style={s.name}>{personalInfo.name || "Your Name"}</Text>
           {personalInfo.title && (
-            <Text style={styles.jobTitle}>{personalInfo.title}</Text>
+            <Text style={s.jobTitle}>{personalInfo.title}</Text>
           )}
           {contactItems.length > 0 && (
-            <View style={styles.contactRow}>
+            <View style={s.contactRow}>
               {contactItems.map((item, i) => (
-                <Text key={i} style={styles.contactItem}>
-                  {item}
-                </Text>
+                <View key={i} style={{ flexDirection: "row", gap: 10 }}>
+                  {i > 0 && <Text style={s.contactSep}>|</Text>}
+                  <Text style={s.contactItem}>{item}</Text>
+                </View>
               ))}
             </View>
           )}
         </View>
 
-        {/* Sections in order */}
+        {/* ── Sections in user-defined order ── */}
         {cv.sectionOrder.map((section) => {
-          const Component = sectionMap[section]
+          const Component = SECTION_RENDERERS[section]
           return Component ? (
             <Component key={section} cv={cv} master={master} />
           ) : null
