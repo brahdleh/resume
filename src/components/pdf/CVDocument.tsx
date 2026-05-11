@@ -122,11 +122,6 @@ function makeStyles(fmt: FormatSettings) {
     experienceItem: {
       marginBottom: fmt.expItemGap,
     },
-    expHeader: {
-      flexDirection: "row" as const,
-      justifyContent: "space-between" as const,
-      alignItems: "flex-start" as const,
-    },
     expRole: {
       fontSize: fontSizeBody,
       fontWeight: 700,
@@ -134,11 +129,6 @@ function makeStyles(fmt: FormatSettings) {
     expDate: {
       fontSize: fontSizeBody,
       color: colorMuted,
-    },
-    expCompany: {
-      fontSize: fontSizeBody,
-      color: colorMuted,
-      marginBottom: 3,
     },
     expCompanyGrouped: {
       fontSize: fontSizeBody,
@@ -179,7 +169,7 @@ function makeStyles(fmt: FormatSettings) {
       lineHeight: fmt.bulletLineHeight,
     },
     bulletMetrics: {
-      color: colorMuted,
+      color: colorText,
     },
 
     // ── Education ──────────────────────────────────────────────────────────
@@ -286,34 +276,22 @@ function BulletList({ exp, cv, s }: { exp: ExpEntry; cv: CVDocument; s: Styles }
   )
 }
 
-function SingleExpEntry({ exp, cv, s }: { exp: ExpEntry; cv: CVDocument; s: Styles }) {
-  return (
-    <View style={s.experienceItem}>
-      <Text style={s.expCompanyGrouped}>
-        {exp.company}{exp.location ? `  ·  ${exp.location}` : ""}
-      </Text>
-      <View style={s.expHeader}>
-        <Text style={s.expRole}>{exp.role}</Text>
-        <Text style={s.expDate}>{[exp.startDate, exp.endDate].filter(Boolean).join(" – ")}</Text>
-      </View>
-      <BulletList exp={exp} cv={cv} s={s} />
-    </View>
-  )
-}
 
 function GroupedExpEntry({
   company,
   exps,
   cv,
   s,
+  isLast,
 }: {
   company: string
   exps: ExpEntry[]
   cv: CVDocument
   s: Styles
+  isLast?: boolean
 }) {
   return (
-    <View style={s.experienceItem}>
+    <View style={isLast ? undefined : s.experienceItem}>
       <Text style={s.expCompanyGrouped}>{company}</Text>
       <View style={{ flexDirection: "row" }}>
         <View style={s.groupedLine} />
@@ -323,10 +301,8 @@ function GroupedExpEntry({
               key={exp.id}
               style={i < exps.length - 1 ? s.groupedRole : undefined}
             >
-              <View style={s.expHeader}>
-                <Text style={s.expRole}>{exp.role}</Text>
-                <Text style={s.expDate}>{[exp.startDate, exp.endDate].filter(Boolean).join(" – ")}</Text>
-              </View>
+              <Text style={s.expRole}>{exp.role}</Text>
+              <Text style={s.expDate}>{[exp.startDate, exp.endDate].filter(Boolean).join(" – ")}</Text>
               <BulletList exp={exp} cv={cv} s={s} />
             </View>
           ))}
@@ -356,14 +332,16 @@ function ExperienceSection({ cv, master, s }: Props) {
   return (
     <View style={s.section}>
       <Text style={s.sectionTitle}>EXPERIENCE</Text>
-      {companyOrder.map((company) => {
-        const exps = grouped[company]
-        return exps.length === 1 ? (
-          <SingleExpEntry key={exps[0].id} exp={exps[0]} cv={cv} s={s} />
-        ) : (
-          <GroupedExpEntry key={company} company={company} exps={exps} cv={cv} s={s} />
-        )
-      })}
+      {companyOrder.map((company, i) => (
+        <GroupedExpEntry
+          key={company}
+          company={company}
+          exps={grouped[company]}
+          cv={cv}
+          s={s}
+          isLast={i === companyOrder.length - 1}
+        />
+      ))}
     </View>
   )
 }
