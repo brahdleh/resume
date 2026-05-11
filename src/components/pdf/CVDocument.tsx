@@ -95,20 +95,20 @@ function makeStyles(fmt: FormatSettings) {
       fontSize: fontSizeBody,
       fontWeight: 700,
       color: colorText,
-      borderBottomWidth: 0.75,
+      borderBottomWidth: fmt.sectionRuleWidth,
       borderBottomColor: colorSectionRule,
       paddingBottom: 1,
-      marginBottom: 5,
+      marginBottom: fmt.sectionHeaderGap,
     },
     sectionTitleSummary: {
       fontSize: fontSizeBody,
       fontWeight: 700,
       color: colorText,
-      borderBottomWidth: 0.75,
+      borderBottomWidth: fmt.sectionRuleWidth,
       borderBottomColor: colorSectionRule,
       paddingBottom: 1,
       marginTop: fmt.summaryTopGap,
-      marginBottom: 5,
+      marginBottom: fmt.sectionHeaderGap,
     },
 
     // ── Body text ──────────────────────────────────────────────────────────
@@ -158,6 +158,9 @@ function makeStyles(fmt: FormatSettings) {
     },
     groupedRole: {
       marginBottom: 6,
+    },
+    titleBulletGap: {
+      marginTop: fmt.titleBulletGap,
     },
     bulletRow: {
       flexDirection: "row" as const,
@@ -265,8 +268,9 @@ function BulletList({ exp, cv, s }: { exp: ExpEntry; cv: CVDocument; s: Styles }
   const achs = achIds
     .map((id) => exp.achievements.find((a) => a.id === id))
     .filter(Boolean) as ExpEntry["achievements"]
+  if (achs.length === 0) return null
   return (
-    <>
+    <View style={s.titleBulletGap}>
       {achs.map((ach) => (
         <View key={ach.id} style={s.bulletRow}>
           <Text style={s.bullet}>•</Text>
@@ -278,7 +282,7 @@ function BulletList({ exp, cv, s }: { exp: ExpEntry; cv: CVDocument; s: Styles }
           </Text>
         </View>
       ))}
-    </>
+    </View>
   )
 }
 

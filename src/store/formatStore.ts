@@ -19,10 +19,12 @@ export interface FormatSettings {
   colorSectionRule: string
 
   // Spacing (pt)
+  sectionRuleWidth: number    // thickness of underline beneath section headers
   sectionGap: number          // gap between sections
   sectionHeaderGap: number    // gap below each section header title
   summaryTopGap: number       // extra gap before summary header
   expItemGap: number          // gap between experience entries
+  titleBulletGap: number      // gap between a role/title row and its bullets
   bulletLineHeight: number    // line height multiplier for bullet text
   lineHeight: number          // line height for summary / general body
 }
@@ -41,10 +43,12 @@ export const DEFAULT_FORMAT: FormatSettings = {
   colorMuted: "#555555",
   colorSectionRule: "#999999",
 
+  sectionRuleWidth: 0.75,
   sectionGap: 10,
   sectionHeaderGap: 5,
   summaryTopGap: 10,
   expItemGap: 9,
+  titleBulletGap: 0,
   bulletLineHeight: 1.35,
   lineHeight: 1.4,
 }

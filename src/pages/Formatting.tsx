@@ -211,6 +211,13 @@ export function Formatting() {
               value={settings.colorSectionRule}
               onChange={(v) => set("colorSectionRule", v)}
             />
+            <NumberField
+              label="Section rule thickness"
+              hint="Line weight of the underline in pt (0 = hidden)"
+              value={settings.sectionRuleWidth}
+              min={0} max={3} step={0.25}
+              onChange={(v) => set("sectionRuleWidth", v)}
+            />
           </div>
 
           <Separator />
@@ -225,6 +232,13 @@ export function Formatting() {
               onChange={(v) => set("sectionGap", v)}
             />
             <NumberField
+              label="Gap below section headers"
+              hint="Space between the rule line and the first item in each section"
+              value={settings.sectionHeaderGap}
+              min={0} max={20} step={0.5}
+              onChange={(v) => set("sectionHeaderGap", v)}
+            />
+            <NumberField
               label="Gap before Summary"
               hint="Extra top spacing before the Summary section header"
               value={settings.summaryTopGap}
@@ -236,6 +250,13 @@ export function Formatting() {
               value={settings.expItemGap}
               min={0} max={20} step={0.5}
               onChange={(v) => set("expItemGap", v)}
+            />
+            <NumberField
+              label="Gap between title and bullets"
+              hint="Space between a role/degree title row and its bullet points"
+              value={settings.titleBulletGap}
+              min={0} max={12} step={0.5}
+              onChange={(v) => set("titleBulletGap", v)}
             />
             <NumberField
               label="Bullet line height"
