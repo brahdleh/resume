@@ -68,9 +68,9 @@ const s = StyleSheet.create({
     marginBottom: 2,
   },
   jobTitle: {
-    fontSize: 9,
+    fontSize: 11,
     color: "#555555",
-    marginBottom: 4,
+    marginTop: 2,
   },
   contactRow: {
     flexDirection: "row",
@@ -79,11 +79,11 @@ const s = StyleSheet.create({
     gap: 10,
   },
   contactItem: {
-    fontSize: 9,
+    fontSize: 11,
     color: "#555555",
   },
   contactSep: {
-    fontSize: 9,
+    fontSize: 11,
     color: "#aaaaaa",
   },
 
@@ -105,6 +105,7 @@ const s = StyleSheet.create({
     fontSize: 11,
     fontWeight: 700,
     color: "#1a1a1a",
+    marginTop: 10,
     marginBottom: 5,
   },
 
@@ -387,9 +388,6 @@ export function CVPDFDocument({ cv, master }: Props) {
         {/* ── Header ── */}
         <View style={s.header}>
           <Text style={s.name}>{personalInfo.name || "Your Name"}</Text>
-          {personalInfo.title && (
-            <Text style={s.jobTitle}>{personalInfo.title}</Text>
-          )}
           {contactItems.length > 0 && (
             <View style={s.contactRow}>
               {contactItems.map((item, i) => (
@@ -399,6 +397,9 @@ export function CVPDFDocument({ cv, master }: Props) {
                 </View>
               ))}
             </View>
+          )}
+          {personalInfo.title && (
+            <Text style={s.jobTitle}>{personalInfo.title}</Text>
           )}
         </View>
 
