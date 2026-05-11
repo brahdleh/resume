@@ -5,6 +5,7 @@ import {
   WrenchIcon,
   BookmarkIcon,
   BriefcaseIcon,
+  SlidersHorizontalIcon,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 
@@ -13,6 +14,7 @@ const navItems = [
   { to: "/master", icon: FileTextIcon, label: "Master CV" },
   { to: "/builder", icon: WrenchIcon, label: "CV Builder" },
   { to: "/templates", icon: BookmarkIcon, label: "Templates" },
+  { to: "/formatting", icon: SlidersHorizontalIcon, label: "Formatting" },
 ]
 
 export function Sidebar() {

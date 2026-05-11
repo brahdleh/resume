@@ -3,6 +3,7 @@ import { PDFDownloadLink, PDFViewer } from "@react-pdf/renderer"
 import { ArrowLeftIcon, DownloadIcon } from "lucide-react"
 import { useCVStore } from "@/store/cvStore"
 import { useMasterStore } from "@/store/masterStore"
+import { useFormatStore } from "@/store/formatStore"
 import { CVPDFDocument } from "@/components/pdf/CVDocument"
 import { Button } from "@/components/ui/button"
 
@@ -11,6 +12,7 @@ export function ExportPage() {
   const navigate = useNavigate()
   const { documents } = useCVStore()
   const master = useMasterStore()
+  const { settings: fmt } = useFormatStore()
 
   const doc = documents.find((d) => d.id === id)
 
@@ -48,7 +50,7 @@ export function ExportPage() {
           )}
         </div>
         <PDFDownloadLink
-          document={<CVPDFDocument cv={doc} master={master} />}
+          document={<CVPDFDocument cv={doc} master={master} fmt={fmt} />}
           fileName={filename}
         >
           {({ loading }) => (
@@ -62,7 +64,7 @@ export function ExportPage() {
 
       <div className="flex-1 overflow-hidden bg-muted/30">
         <PDFViewer width="100%" height="100%" showToolbar={false}>
-          <CVPDFDocument cv={doc} master={master} />
+          <CVPDFDocument cv={doc} master={master} fmt={fmt} />
         </PDFViewer>
       </div>
     </div>

@@ -6,6 +6,7 @@ import { MasterEditor } from "@/pages/MasterEditor"
 import { CVBuilder } from "@/pages/CVBuilder"
 import { Templates } from "@/pages/Templates"
 import { ExportPage } from "@/pages/ExportPage"
+import { Formatting } from "@/pages/Formatting"
 
 const router = createBrowserRouter([
   {
@@ -17,6 +18,7 @@ const router = createBrowserRouter([
       { path: "builder", element: <CVBuilder /> },
       { path: "templates", element: <Templates /> },
       { path: "export/:id", element: <ExportPage /> },
+      { path: "formatting", element: <Formatting /> },
     ],
   },
 ])

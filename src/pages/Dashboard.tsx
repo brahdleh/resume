@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useRef, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import {
   PlusIcon,
@@ -7,6 +7,8 @@ import {
   BookmarkIcon,
   Trash2Icon,
   ArrowRightIcon,
+  DownloadIcon,
+  UploadIcon,
 } from "lucide-react"
 import { useMasterStore } from "@/store/masterStore"
 import { useCVStore } from "@/store/cvStore"
@@ -14,7 +16,6 @@ import { useTemplateStore } from "@/store/templateStore"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Separator } from "@/components/ui/separator"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import {
   Dialog,
@@ -86,11 +87,62 @@ function NewCVDialog({ open, onClose }: { open: boolean; onClose: () => void }) 
 
 export function Dashboard() {
   const navigate = useNavigate()
-  const { personalInfo, experiences, summaries, skills, education } =
-    useMasterStore()
-  const { documents, setActiveId, deleteDocument } = useCVStore()
-  const { templates } = useTemplateStore()
+  const masterStore = useMasterStore()
+  const { personalInfo, experiences, summaries, skills, education } = masterStore
+  const cvStore = useCVStore()
+  const { documents, setActiveId, deleteDocument } = cvStore
+  const templateStore = useTemplateStore()
+  const { templates } = templateStore
   const [newCVOpen, setNewCVOpen] = useState(false)
+  const importRef = useRef<HTMLInputElement>(null)
+
+  function handleExport() {
+    const payload = {
+      version: 1,
+      exportedAt: new Date().toISOString(),
+      master: {
+        personalInfo: masterStore.personalInfo,
+        summaries: masterStore.summaries,
+        experiences: masterStore.experiences,
+        education: masterStore.education,
+        skills: masterStore.skills,
+        certifications: masterStore.certifications,
+      },
+      documents: cvStore.documents,
+      activeId: cvStore.activeId,
+      templates: templateStore.templates,
+    }
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement("a")
+    a.href = url
+    a.download = `cv-studio-backup-${new Date().toISOString().slice(0, 10)}.json`
+    a.click()
+    URL.revokeObjectURL(url)
+    toast.success("Data exported")
+  }
+
+  function handleImport(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (!file) return
+    const reader = new FileReader()
+    reader.onload = (ev) => {
+      try {
+        const json = JSON.parse(ev.target?.result as string)
+        if (!json.master || !json.documents === undefined || !json.templates === undefined) {
+          throw new Error("Unrecognised file format")
+        }
+        masterStore.loadAll(json.master)
+        cvStore.loadAll({ documents: json.documents ?? [], activeId: json.activeId ?? null })
+        templateStore.loadAll({ templates: json.templates ?? [] })
+        toast.success("Data imported — your workspace has been restored")
+      } catch {
+        toast.error("Import failed — make sure you're uploading a valid CV Studio backup")
+      }
+    }
+    reader.readAsText(file)
+    e.target.value = ""
+  }
 
   const totalAchievements = experiences.reduce(
     (sum, exp) => sum + exp.achievements.length,
@@ -133,13 +185,32 @@ export function Dashboard() {
 
   return (
     <div className="flex h-full flex-col">
-      <div className="border-b px-6 py-4">
-        <h1 className="text-base font-semibold">
-          {personalInfo.name ? `Welcome back, ${personalInfo.name.split(" ")[0]}` : "CV Studio"}
-        </h1>
-        <p className="mt-0.5 text-xs text-muted-foreground">
-          Your modular job application workspace
-        </p>
+      <div className="border-b px-6 py-4 flex items-center justify-between gap-4">
+        <div>
+          <h1 className="text-base font-semibold">
+            {personalInfo.name ? `Welcome back, ${personalInfo.name.split(" ")[0]}` : "CV Studio"}
+          </h1>
+          <p className="mt-0.5 text-xs text-muted-foreground">
+            Your modular job application workspace
+          </p>
+        </div>
+        <div className="flex items-center gap-2 shrink-0">
+          <Button variant="outline" size="sm" onClick={handleExport}>
+            <DownloadIcon data-icon="inline-start" />
+            Export
+          </Button>
+          <Button variant="outline" size="sm" onClick={() => importRef.current?.click()}>
+            <UploadIcon data-icon="inline-start" />
+            Import
+          </Button>
+          <input
+            ref={importRef}
+            type="file"
+            accept=".json,application/json"
+            className="hidden"
+            onChange={handleImport}
+          />
+        </div>
       </div>
 
       <ScrollArea className="flex-1">

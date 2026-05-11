@@ -46,6 +46,15 @@ interface MasterState {
   addCertification: (data: Omit<Certification, "id">) => void
   updateCertification: (id: string, data: Partial<Omit<Certification, "id">>) => void
   deleteCertification: (id: string) => void
+
+  loadAll: (data: {
+    personalInfo: PersonalInfo
+    summaries: Summary[]
+    experiences: Experience[]
+    education: Education[]
+    skills: Skill[]
+    certifications: Certification[]
+  }) => void
 }
 
 const defaultPersonalInfo: PersonalInfo = {
@@ -203,6 +212,8 @@ export const useMasterStore = create<MasterState>()(
         set((s) => ({
           certifications: s.certifications.filter((x) => x.id !== id),
         })),
+
+      loadAll: (data) => set(data),
     }),
     { name: "cv-master" }
   )

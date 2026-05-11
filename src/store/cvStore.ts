@@ -23,6 +23,7 @@ interface CVState {
   reorderSections: (docId: string, order: SectionType[]) => void
   reorderDocumentAchievements: (docId: string, expId: string, ids: string[]) => void
   applyTemplateToDocument: (docId: string, patch: Partial<CVDocument>) => void
+  loadAll: (data: { documents: CVDocument[]; activeId: string | null }) => void
 }
 
 export const useCVStore = create<CVState>()(
@@ -248,6 +249,8 @@ export const useCVStore = create<CVState>()(
               : d
           ),
         })),
+
+      loadAll: (data) => set(data),
     }),
     { name: "cv-documents" }
   )

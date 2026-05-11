@@ -18,6 +18,7 @@ interface TemplateState {
   updateTemplate: (id: string, data: Partial<Omit<CVTemplate, "id" | "createdAt">>) => void
   deleteTemplate: (id: string) => void
   buildDocumentPatch: (template: CVTemplate) => Partial<CVDocument>
+  loadAll: (data: { templates: CVTemplate[] }) => void
 }
 
 export const useTemplateStore = create<TemplateState>()(
@@ -70,6 +71,8 @@ export const useTemplateStore = create<TemplateState>()(
         sectionOrder: [...template.sectionOrder],
         templateId: template.id,
       }),
+
+      loadAll: (data) => set(data),
     }),
     { name: "cv-templates" }
   )

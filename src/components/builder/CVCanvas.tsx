@@ -57,9 +57,10 @@ function SummarySection({ doc }: { doc: CVDocument }) {
 interface ExpCardProps {
   exp: ReturnType<typeof useMasterStore.getState>["experiences"][number]
   doc: CVDocument
+  showCompany?: boolean
 }
 
-function ExperienceEntry({ exp, doc }: ExpCardProps) {
+function ExperienceEntry({ exp, doc, showCompany = true }: ExpCardProps) {
   const { reorderDocumentAchievements } = useCVStore()
   const sensors = useSensors(useSensor(PointerSensor))
   const selectedAchIds = doc.selectedAchievementsPerExperience[exp.id] ?? []
@@ -81,15 +82,20 @@ function ExperienceEntry({ exp, doc }: ExpCardProps) {
 
   return (
     <div>
+      {showCompany && (
+        <p className="text-sm font-semibold">
+          {exp.company}{exp.location ? ` · ${exp.location}` : ""}
+        </p>
+      )}
       <div className="flex items-baseline justify-between gap-2">
-        <div>
-          <p className="text-sm font-semibold">{exp.role}</p>
-          <p className="text-xs text-muted-foreground">
-            {exp.company} · {exp.location}
-          </p>
-        </div>
+        <p className={showCompany ? "text-xs font-medium" : "text-sm font-semibold"}>
+          {exp.role}
+          {!showCompany && exp.location && (
+            <span className="font-normal text-muted-foreground"> · {exp.location}</span>
+          )}
+        </p>
         <p className="text-xs text-muted-foreground shrink-0">
-          {exp.startDate} – {exp.endDate}
+          {[exp.startDate, exp.endDate].filter(Boolean).join(" – ")}
         </p>
       </div>
 
@@ -135,11 +141,38 @@ function ExperienceSection({ doc }: { doc: CVDocument }) {
     )
   }
 
+  // Group by company, preserving order
+  const companyOrder: string[] = []
+  const grouped: Record<string, typeof experiences> = {}
+  for (const exp of selected) {
+    if (!grouped[exp.company]) {
+      grouped[exp.company] = []
+      companyOrder.push(exp.company)
+    }
+    grouped[exp.company].push(exp)
+  }
+
   return (
     <div className="flex flex-col gap-5">
-      {selected.map((exp) => (
-        <ExperienceEntry key={exp.id} exp={exp} doc={doc} />
-      ))}
+      {companyOrder.map((company) => {
+        const exps = grouped[company]
+        if (exps.length === 1) {
+          return <ExperienceEntry key={exps[0].id} exp={exps[0]} doc={doc} />
+        }
+        return (
+          <div key={company}>
+            <p className="text-sm font-semibold mb-2">{company}</p>
+            <div className="flex gap-3">
+              <div className="w-px bg-muted-foreground/25 shrink-0 mt-1" />
+              <div className="flex flex-col gap-4 flex-1">
+                {exps.map((exp) => (
+                  <ExperienceEntry key={exp.id} exp={exp} doc={doc} showCompany={false} />
+                ))}
+              </div>
+            </div>
+          </div>
+        )
+      })}
     </div>
   )
 }
@@ -236,7 +269,7 @@ function EducationSectionContent({ doc }: { doc: CVDocument }) {
             <p className="text-xs text-muted-foreground">{edu.institution}{edu.grade ? ` · ${edu.grade}` : ""}</p>
           </div>
           <p className="text-xs text-muted-foreground shrink-0">
-            {edu.startDate} – {edu.endDate}
+            {[edu.startDate, edu.endDate].filter(Boolean).join(" – ")}
           </p>
         </div>
       ))}

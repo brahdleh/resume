@@ -3,11 +3,11 @@ import {
   Page,
   Text,
   View,
-  StyleSheet,
   Font,
 } from "@react-pdf/renderer"
 import type { CVDocument } from "@/types/cv"
 import type { useMasterStore } from "@/store/masterStore"
+import { DEFAULT_FORMAT, type FormatSettings } from "@/store/formatStore"
 
 type MasterState = ReturnType<typeof useMasterStore.getState>
 
@@ -41,189 +41,214 @@ Font.register({
   ],
 })
 
-// Unit conversions: 1 cm = 28.3465 pt
-// Top 1.5cm = 42pt | Bottom 1.3cm = 37pt | Left 1.3cm = 37pt | Right 2cm = 57pt
-const s = StyleSheet.create({
-  page: {
-    fontFamily: "Calibri",
-    fontWeight: 400,
-    fontSize: 11,
-    paddingTop: 42,
-    paddingBottom: 37,
-    paddingLeft: 37,
-    paddingRight: 57,
-    color: "#1a1a1a",
-  },
+function makeStyles(fmt: FormatSettings) {
+  const { colorText, colorMuted, colorSectionRule, fontSizeBody } = fmt
+  return {
+    page: {
+      fontFamily: "Calibri",
+      fontWeight: 400,
+      fontSize: fontSizeBody,
+      paddingTop: fmt.marginTop,
+      paddingBottom: fmt.marginBottom,
+      paddingLeft: fmt.marginLeft,
+      paddingRight: fmt.marginRight,
+      color: colorText,
+    },
 
-  // ── Header block ─────────────────────────────────────────────────────────
-  header: {
-    alignItems: "center",
-    marginBottom: 10,
-  },
-  name: {
-    fontSize: 25,
-    fontWeight: 700,
-    letterSpacing: 0.3,
-    color: "#1a1a1a",
-    marginBottom: 2,
-  },
-  jobTitle: {
-    fontSize: 11,
-    color: "#555555",
-    marginTop: 2,
-  },
-  contactRow: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "center",
-    gap: 10,
-  },
-  contactItem: {
-    fontSize: 11,
-    color: "#555555",
-  },
-  contactSep: {
-    fontSize: 11,
-    color: "#aaaaaa",
-  },
+    // ── Header block ───────────────────────────────────────────────────────
+    header: {
+      alignItems: "center" as const,
+      marginBottom: 10,
+    },
+    name: {
+      fontSize: fmt.fontSizeName,
+      fontWeight: 700,
+      letterSpacing: 0.3,
+      color: colorText,
+      marginBottom: 2,
+    },
+    jobTitle: {
+      fontSize: fmt.fontSizeContact,
+      color: colorMuted,
+      marginTop: 2,
+    },
+    contactRow: {
+      flexDirection: "row" as const,
+      flexWrap: "wrap" as const,
+      justifyContent: "center" as const,
+      gap: 10,
+    },
+    contactItem: {
+      fontSize: fmt.fontSizeContact,
+      color: colorMuted,
+    },
+    contactSep: {
+      fontSize: fmt.fontSizeContact,
+      color: "#aaaaaa",
+    },
 
-  // ── Section ──────────────────────────────────────────────────────────────
-  section: {
-    marginBottom: 10,
-  },
-  sectionTitle: {
-    fontSize: 11,
-    fontWeight: 700,
-    color: "#1a1a1a",
-    borderBottomWidth: 0.75,
-    borderBottomColor: "#999999",
-    paddingBottom: 1,
-    marginBottom: 5,
-  },
-  // Summary gets no underline rule — it flows straight from the header
-  sectionTitleSummary: {
-    fontSize: 11,
-    fontWeight: 700,
-    color: "#1a1a1a",
-    marginTop: 10,
-    marginBottom: 5,
-  },
+    // ── Section ────────────────────────────────────────────────────────────
+    section: {
+      marginBottom: fmt.sectionGap,
+    },
+    sectionTitle: {
+      fontSize: fontSizeBody,
+      fontWeight: 700,
+      color: colorText,
+      borderBottomWidth: 0.75,
+      borderBottomColor: colorSectionRule,
+      paddingBottom: 1,
+      marginBottom: 5,
+    },
+    sectionTitleSummary: {
+      fontSize: fontSizeBody,
+      fontWeight: 700,
+      color: colorText,
+      borderBottomWidth: 0.75,
+      borderBottomColor: colorSectionRule,
+      paddingBottom: 1,
+      marginTop: fmt.summaryTopGap,
+      marginBottom: 5,
+    },
 
-  // ── Body text ────────────────────────────────────────────────────────────
-  summaryText: {
-    fontSize: 11,
-    color: "#1a1a1a",
-    lineHeight: 1.4,
-  },
+    // ── Body text ──────────────────────────────────────────────────────────
+    summaryText: {
+      fontSize: fontSizeBody,
+      color: colorText,
+      lineHeight: fmt.lineHeight,
+    },
 
-  // ── Experience ───────────────────────────────────────────────────────────
-  experienceItem: {
-    marginBottom: 9,
-  },
-  expHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "flex-start",
-  },
-  expRole: {
-    fontSize: 11,
-    fontWeight: 700,
-  },
-  expDate: {
-    fontSize: 11,
-    color: "#555555",
-  },
-  expCompany: {
-    fontSize: 11,
-    color: "#555555",
-    marginBottom: 3,
-  },
-  bulletRow: {
-    flexDirection: "row",
-    marginBottom: 1.5,
-    paddingLeft: 2,
-  },
-  bullet: {
-    width: 10,
-    fontSize: 11,
-    color: "#333333",
-  },
-  bulletText: {
-    flex: 1,
-    fontSize: 11,
-    color: "#1a1a1a",
-    lineHeight: 1.35,
-  },
-  bulletMetrics: {
-    color: "#555555",
-  },
+    // ── Experience ─────────────────────────────────────────────────────────
+    experienceItem: {
+      marginBottom: fmt.expItemGap,
+    },
+    expHeader: {
+      flexDirection: "row" as const,
+      justifyContent: "space-between" as const,
+      alignItems: "flex-start" as const,
+    },
+    expRole: {
+      fontSize: fontSizeBody,
+      fontWeight: 700,
+    },
+    expDate: {
+      fontSize: fontSizeBody,
+      color: colorMuted,
+    },
+    expCompany: {
+      fontSize: fontSizeBody,
+      color: colorMuted,
+      marginBottom: 3,
+    },
+    expCompanyGrouped: {
+      fontSize: fontSizeBody,
+      fontWeight: 700,
+      color: colorText,
+      marginBottom: 3,
+    },
+    groupedLine: {
+      width: 1.5,
+      backgroundColor: "#cccccc",
+      marginRight: 9,
+      marginTop: 1,
+      marginBottom: 1,
+    },
+    groupedRoles: {
+      flex: 1,
+    },
+    groupedRole: {
+      marginBottom: 6,
+    },
+    bulletRow: {
+      flexDirection: "row" as const,
+      marginBottom: 1.5,
+      paddingLeft: 2,
+    },
+    bullet: {
+      width: 10,
+      fontSize: fontSizeBody,
+      color: "#333333",
+    },
+    bulletText: {
+      flex: 1,
+      fontSize: fontSizeBody,
+      color: colorText,
+      lineHeight: fmt.bulletLineHeight,
+    },
+    bulletMetrics: {
+      color: colorMuted,
+    },
 
-  // ── Education ────────────────────────────────────────────────────────────
-  educationItem: {
-    marginBottom: 7,
-  },
-  eduHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "flex-start",
-  },
-  eduDegree: {
-    fontSize: 11,
-    fontWeight: 700,
-  },
-  eduDate: {
-    fontSize: 11,
-    color: "#555555",
-  },
-  eduInstitution: {
-    fontSize: 11,
-    color: "#555555",
-  },
+    // ── Education ──────────────────────────────────────────────────────────
+    educationItem: {
+      marginBottom: 7,
+    },
+    eduHeader: {
+      flexDirection: "row" as const,
+      justifyContent: "space-between" as const,
+      alignItems: "flex-start" as const,
+    },
+    eduDegree: {
+      fontSize: fontSizeBody,
+      fontWeight: 700,
+    },
+    eduDate: {
+      fontSize: fontSizeBody,
+      color: colorMuted,
+    },
+    eduInstitution: {
+      fontSize: fontSizeBody,
+      color: colorMuted,
+    },
 
-  // ── Skills ───────────────────────────────────────────────────────────────
-  skillRow: {
-    flexDirection: "row",
-    marginBottom: 2.5,
-  },
-  skillCategory: {
-    fontSize: 11,
-    fontWeight: 700,
-    width: 120,
-    color: "#1a1a1a",
-  },
-  skillList: {
-    flex: 1,
-    fontSize: 11,
-    color: "#1a1a1a",
-  },
+    // ── Skills ─────────────────────────────────────────────────────────────
+    skillRow: {
+      flexDirection: "row" as const,
+      marginBottom: 2.5,
+    },
+    skillCategory: {
+      fontSize: fontSizeBody,
+      fontWeight: 700,
+      width: 120,
+      color: colorText,
+    },
+    skillList: {
+      flex: 1,
+      fontSize: fontSizeBody,
+      color: colorText,
+    },
 
-  // ── Certifications ───────────────────────────────────────────────────────
-  certItem: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 4,
-  },
-  certName: {
-    fontSize: 11,
-    fontWeight: 700,
-  },
-  certIssuer: {
-    fontSize: 11,
-    color: "#555555",
-  },
-  certDate: {
-    fontSize: 11,
-    color: "#555555",
-  },
-})
+    // ── Certifications ─────────────────────────────────────────────────────
+    certItem: {
+      flexDirection: "row" as const,
+      justifyContent: "space-between" as const,
+      marginBottom: 4,
+    },
+    certName: {
+      fontSize: fontSizeBody,
+      fontWeight: 700,
+    },
+    certIssuer: {
+      fontSize: fontSizeBody,
+      color: colorMuted,
+    },
+    certDate: {
+      fontSize: fontSizeBody,
+      color: colorMuted,
+    },
+  }
+}
+
+type Styles = ReturnType<typeof makeStyles>
 
 interface Props {
   cv: CVDocument
   master: MasterState
+  s: Styles
 }
 
-function SummarySection({ cv, master }: Props) {
-  const summary = master.summaries.find((s) => s.id === cv.selectedSummaryId)
+function SummarySection({ cv, master, s }: Props) {
+  const summary = master.summaries.find((sm) => sm.id === cv.selectedSummaryId)
   if (!summary) return null
   return (
     <View style={s.section}>
@@ -233,53 +258,113 @@ function SummarySection({ cv, master }: Props) {
   )
 }
 
-function ExperienceSection({ cv, master }: Props) {
+type ExpEntry = ReturnType<typeof useMasterStore.getState>["experiences"][number]
+
+function BulletList({ exp, cv, s }: { exp: ExpEntry; cv: CVDocument; s: Styles }) {
+  const achIds = cv.selectedAchievementsPerExperience[exp.id] ?? []
+  const achs = achIds
+    .map((id) => exp.achievements.find((a) => a.id === id))
+    .filter(Boolean) as ExpEntry["achievements"]
+  return (
+    <>
+      {achs.map((ach) => (
+        <View key={ach.id} style={s.bulletRow}>
+          <Text style={s.bullet}>•</Text>
+          <Text style={s.bulletText}>
+            {ach.content}
+            {ach.metrics ? (
+              <Text style={s.bulletMetrics}>{"  "}— {ach.metrics}</Text>
+            ) : null}
+          </Text>
+        </View>
+      ))}
+    </>
+  )
+}
+
+function SingleExpEntry({ exp, cv, s }: { exp: ExpEntry; cv: CVDocument; s: Styles }) {
+  return (
+    <View style={s.experienceItem}>
+      <Text style={s.expCompanyGrouped}>
+        {exp.company}{exp.location ? `  ·  ${exp.location}` : ""}
+      </Text>
+      <View style={s.expHeader}>
+        <Text style={s.expRole}>{exp.role}</Text>
+        <Text style={s.expDate}>{[exp.startDate, exp.endDate].filter(Boolean).join(" – ")}</Text>
+      </View>
+      <BulletList exp={exp} cv={cv} s={s} />
+    </View>
+  )
+}
+
+function GroupedExpEntry({
+  company,
+  exps,
+  cv,
+  s,
+}: {
+  company: string
+  exps: ExpEntry[]
+  cv: CVDocument
+  s: Styles
+}) {
+  return (
+    <View style={s.experienceItem}>
+      <Text style={s.expCompanyGrouped}>{company}</Text>
+      <View style={{ flexDirection: "row" }}>
+        <View style={s.groupedLine} />
+        <View style={s.groupedRoles}>
+          {exps.map((exp, i) => (
+            <View
+              key={exp.id}
+              style={i < exps.length - 1 ? s.groupedRole : undefined}
+            >
+              <View style={s.expHeader}>
+                <Text style={s.expRole}>{exp.role}</Text>
+                <Text style={s.expDate}>{[exp.startDate, exp.endDate].filter(Boolean).join(" – ")}</Text>
+              </View>
+              <BulletList exp={exp} cv={cv} s={s} />
+            </View>
+          ))}
+        </View>
+      </View>
+    </View>
+  )
+}
+
+function ExperienceSection({ cv, master, s }: Props) {
   const selected = cv.selectedExperienceIds
     .map((id) => master.experiences.find((e) => e.id === id))
-    .filter(Boolean) as typeof master.experiences
+    .filter(Boolean) as ExpEntry[]
 
   if (selected.length === 0) return null
+
+  const companyOrder: string[] = []
+  const grouped: Record<string, ExpEntry[]> = {}
+  for (const exp of selected) {
+    if (!grouped[exp.company]) {
+      grouped[exp.company] = []
+      companyOrder.push(exp.company)
+    }
+    grouped[exp.company].push(exp)
+  }
 
   return (
     <View style={s.section}>
       <Text style={s.sectionTitle}>EXPERIENCE</Text>
-      {selected.map((exp) => {
-        const achIds = cv.selectedAchievementsPerExperience[exp.id] ?? []
-        const achs = achIds
-          .map((id) => exp.achievements.find((a) => a.id === id))
-          .filter(Boolean) as typeof exp.achievements
-
-        return (
-          <View key={exp.id} style={s.experienceItem}>
-            <View style={s.expHeader}>
-              <Text style={s.expRole}>{exp.role}</Text>
-              <Text style={s.expDate}>
-                {exp.startDate} – {exp.endDate}
-              </Text>
-            </View>
-            <Text style={s.expCompany}>
-              {exp.company}
-              {exp.location ? `  ·  ${exp.location}` : ""}
-            </Text>
-            {achs.map((ach) => (
-              <View key={ach.id} style={s.bulletRow}>
-                <Text style={s.bullet}>•</Text>
-                <Text style={s.bulletText}>
-                  {ach.content}
-                  {ach.metrics ? (
-                    <Text style={s.bulletMetrics}>{"  "}— {ach.metrics}</Text>
-                  ) : null}
-                </Text>
-              </View>
-            ))}
-          </View>
+      {companyOrder.map((company) => {
+        const exps = grouped[company]
+        return exps.length === 1 ? (
+          <SingleExpEntry key={exps[0].id} exp={exps[0]} cv={cv} s={s} />
+        ) : (
+          <GroupedExpEntry key={company} company={company} exps={exps} cv={cv} s={s} />
         )
       })}
     </View>
   )
 }
 
-function EducationSection({ cv, master }: Props) {
+function EducationSection({ cv, master, s }: Props) {
   const selected = master.education.filter((e) =>
     cv.selectedEducationIds.includes(e.id)
   )
@@ -294,9 +379,7 @@ function EducationSection({ cv, master }: Props) {
             <Text style={s.eduDegree}>
               {edu.degree} in {edu.field}
             </Text>
-            <Text style={s.eduDate}>
-              {edu.startDate} – {edu.endDate}
-            </Text>
+            <Text style={s.eduDate}>{[edu.startDate, edu.endDate].filter(Boolean).join(" – ")}</Text>
           </View>
           <Text style={s.eduInstitution}>
             {edu.institution}
@@ -308,9 +391,9 @@ function EducationSection({ cv, master }: Props) {
   )
 }
 
-function SkillsSection({ cv, master }: Props) {
-  const selected = master.skills.filter((s) =>
-    cv.selectedSkillIds.includes(s.id)
+function SkillsSection({ cv, master, s }: Props) {
+  const selected = master.skills.filter((sk) =>
+    cv.selectedSkillIds.includes(sk.id)
   )
   if (selected.length === 0) return null
 
@@ -337,7 +420,7 @@ function SkillsSection({ cv, master }: Props) {
   )
 }
 
-function CertificationsSection({ cv, master }: Props) {
+function CertificationsSection({ cv, master, s }: Props) {
   const selected = master.certifications.filter((c) =>
     cv.selectedCertificationIds.includes(c.id)
   )
@@ -359,10 +442,7 @@ function CertificationsSection({ cv, master }: Props) {
   )
 }
 
-const SECTION_RENDERERS: Record<
-  string,
-  (props: Props) => React.ReactElement | null
-> = {
+const SECTION_RENDERERS: Record<string, (props: Props) => React.ReactElement | null> = {
   summary: SummarySection,
   experience: ExperienceSection,
   education: EducationSection,
@@ -370,8 +450,15 @@ const SECTION_RENDERERS: Record<
   certifications: CertificationsSection,
 }
 
-export function CVPDFDocument({ cv, master }: Props) {
+interface CVPDFDocumentProps {
+  cv: CVDocument
+  master: MasterState
+  fmt?: FormatSettings
+}
+
+export function CVPDFDocument({ cv, master, fmt = DEFAULT_FORMAT }: CVPDFDocumentProps) {
   const { personalInfo } = master
+  const s = makeStyles(fmt)
 
   const contactItems = [
     personalInfo.email,
@@ -407,7 +494,7 @@ export function CVPDFDocument({ cv, master }: Props) {
         {cv.sectionOrder.map((section) => {
           const Component = SECTION_RENDERERS[section]
           return Component ? (
-            <Component key={section} cv={cv} master={master} />
+            <Component key={section} cv={cv} master={master} s={s} />
           ) : null
         })}
       </Page>
