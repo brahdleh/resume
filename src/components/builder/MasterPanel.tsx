@@ -3,7 +3,6 @@ import { ChevronDownIcon, ChevronRightIcon } from "lucide-react"
 import { useMasterStore } from "@/store/masterStore"
 import { useCVStore } from "@/store/cvStore"
 import type { CVDocument } from "@/types/cv"
-import { ScrollArea } from "@/components/ui/scroll-area"
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
 
@@ -263,17 +262,13 @@ function EducationPanel({ doc }: Props) {
 export function MasterPanel({ doc }: Props) {
   return (
     <div className="flex h-full w-64 shrink-0 flex-col border-r bg-muted/10">
-      <div className="border-b px-4 py-3">
-        <p className="text-xs font-semibold">Master CV</p>
-        <p className="text-xs text-muted-foreground">Tick items to include</p>
-      </div>
-      <ScrollArea className="flex-1">
+      <div className="flex-1 min-h-0 overflow-y-auto scrollbar-hide">
         <div className="flex flex-col gap-3 py-3">
           <ExperiencePanel doc={doc} />
           <SkillsPanel doc={doc} />
           <EducationPanel doc={doc} />
         </div>
-      </ScrollArea>
+      </div>
     </div>
   )
 }

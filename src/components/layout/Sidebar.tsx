@@ -6,6 +6,8 @@ import {
   BookmarkIcon,
   BriefcaseIcon,
   SlidersHorizontalIcon,
+  ClipboardListIcon,
+  CrosshairIcon,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 
@@ -15,6 +17,8 @@ const navItems = [
   { to: "/builder", icon: WrenchIcon, label: "CV Builder" },
   { to: "/templates", icon: BookmarkIcon, label: "Templates" },
   { to: "/formatting", icon: SlidersHorizontalIcon, label: "Formatting" },
+  { to: "/jobs", icon: ClipboardListIcon, label: "Jobs" },
+  { to: "/targets", icon: CrosshairIcon, label: "Targets" },
 ]
 
 export function Sidebar() {

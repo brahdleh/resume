@@ -7,6 +7,8 @@ import { CVBuilder } from "@/pages/CVBuilder"
 import { Templates } from "@/pages/Templates"
 import { ExportPage } from "@/pages/ExportPage"
 import { Formatting } from "@/pages/Formatting"
+import { Jobs } from "@/pages/Jobs"
+import { Targets } from "@/pages/Targets"
 
 const router = createBrowserRouter([
   {
@@ -19,6 +21,8 @@ const router = createBrowserRouter([
       { path: "templates", element: <Templates /> },
       { path: "export/:id", element: <ExportPage /> },
       { path: "formatting", element: <Formatting /> },
+      { path: "jobs", element: <Jobs /> },
+      { path: "targets", element: <Targets /> },
     ],
   },
 ])

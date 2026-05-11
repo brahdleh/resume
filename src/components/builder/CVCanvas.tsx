@@ -19,7 +19,6 @@ import { GripVerticalIcon } from "lucide-react"
 import { useMasterStore } from "@/store/masterStore"
 import { useCVStore } from "@/store/cvStore"
 import type { CVDocument, SectionType } from "@/types/cv"
-import { ScrollArea } from "@/components/ui/scroll-area"
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
 
@@ -370,7 +369,7 @@ export function CVCanvas({ doc }: CVCanvasProps) {
   const { personalInfo } = useMasterStore()
 
   return (
-    <ScrollArea className="flex-1">
+    <div className="flex-1 min-h-0 overflow-y-auto scrollbar-hide">
       <div className="mx-auto max-w-2xl px-6 py-6">
         <div className="rounded-xl border bg-background shadow-sm">
           <div className="border-b px-8 py-6 text-center">
@@ -444,6 +443,6 @@ export function CVCanvas({ doc }: CVCanvasProps) {
           </Badge>
         </div>
       </div>
-    </ScrollArea>
+    </div>
   )
 }

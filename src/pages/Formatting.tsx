@@ -128,7 +128,7 @@ export function Formatting() {
         </Button>
       </div>
 
-      <div className="flex-1 min-h-0 overflow-y-auto">
+      <div className="flex-1 min-h-0 overflow-y-auto scrollbar-hide">
         <div className="mx-auto max-w-lg px-6 py-6 flex flex-col gap-4">
 
           {/* ── Margins ──────────────────────────────────────────────────── */}
