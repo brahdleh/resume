@@ -6,7 +6,6 @@ export interface JobRequirement {
   id: string
   text: string
   evidenceLevel: EvidenceLevel
-  notes?: string
 }
 
 export interface Job {

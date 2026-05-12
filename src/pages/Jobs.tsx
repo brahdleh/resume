@@ -12,6 +12,7 @@ import {
   CircleDashedIcon,
   CircleIcon,
   ClipboardListIcon,
+  ArrowLeftIcon,
 } from "lucide-react"
 import { useJobStore } from "@/store/jobStore"
 import { useCVStore } from "@/store/cvStore"
@@ -128,16 +129,52 @@ export function Jobs() {
     <div className="flex h-full flex-col">
       {/* Header */}
       <div className="flex h-14 items-center justify-between border-b px-6">
-        <div>
-          <h1 className="text-base font-semibold">Jobs</h1>
-          <p className="text-xs text-muted-foreground">
-            Track applications and decompose requirements
-          </p>
+        <div className="flex items-center gap-3">
+          {selected && (
+            <Button
+              size="icon-sm"
+              variant="ghost"
+              onClick={() => setSelectedId(null)}
+              title="Back to jobs"
+            >
+              <ArrowLeftIcon className="size-4" />
+            </Button>
+          )}
+          <div>
+            <h1 className="text-base font-semibold">
+              {selected ? selected.title : "Jobs"}
+            </h1>
+            <p className="text-xs text-muted-foreground">
+              {selected ? selected.company : "Track applications and decompose requirements"}
+            </p>
+          </div>
         </div>
-        <Button size="sm" onClick={() => setAddOpen(true)}>
-          <PlusIcon data-icon="inline-start" />
-          Add Job
-        </Button>
+        <div className="flex items-center gap-2">
+          {selected && (
+            <>
+              <Button
+                size="icon-sm"
+                variant="ghost"
+                onClick={() => setEditOpen(true)}
+                title="Edit job"
+              >
+                <PencilIcon className="size-3.5" />
+              </Button>
+              <Button
+                size="icon-sm"
+                variant="ghost"
+                onClick={() => handleDelete(selected.id)}
+                title="Delete job"
+              >
+                <Trash2Icon className="size-3.5 text-destructive" />
+              </Button>
+            </>
+          )}
+          <Button size="sm" onClick={() => setAddOpen(true)}>
+            <PlusIcon data-icon="inline-start" />
+            Add Job
+          </Button>
+        </div>
       </div>
 
       {/* Body */}
@@ -157,108 +194,67 @@ export function Jobs() {
             Add Job
           </Button>
         </div>
-      ) : (
-        <div className="flex flex-1 overflow-hidden">
-          {/* Job list */}
-          <div className="flex w-72 shrink-0 flex-col border-r">
-            <ScrollArea className="flex-1">
-              <div className="flex flex-col gap-1 p-2">
-                {jobs.map((job) => {
-                  const statusCfg = STATUS_CONFIG[job.status]
-                  return (
-                    <button
-                      key={job.id}
-                      onClick={() => setSelectedId(job.id)}
-                      className={cn(
-                        "flex flex-col gap-1 rounded-lg border px-3 py-2.5 text-left transition-colors",
-                        selectedId === job.id
-                          ? "border-primary/30 bg-primary/5"
-                          : "border-transparent bg-transparent hover:bg-muted/50"
-                      )}
-                    >
-                      <div className="flex items-start justify-between gap-2">
-                        <span className="truncate text-sm font-medium leading-tight">
-                          {job.title}
-                        </span>
-                        <Badge
-                          variant="outline"
-                          className={cn("shrink-0 text-[10px]", statusCfg.className)}
-                        >
-                          {statusCfg.label}
-                        </Badge>
-                      </div>
-                      <span className="truncate text-xs text-muted-foreground">
-                        {job.company}
-                      </span>
-                      <EvidenceSummaryBar job={job} />
-                    </button>
-                  )
-                })}
-              </div>
-            </ScrollArea>
+      ) : !selected ? (
+        /* Job list */
+        <ScrollArea className="flex-1">
+          <div className="flex flex-col gap-1 p-4">
+            {jobs.map((job) => {
+              const statusCfg = STATUS_CONFIG[job.status]
+              return (
+                <button
+                  key={job.id}
+                  onClick={() => setSelectedId(job.id)}
+                  className="flex items-center justify-between rounded-lg border px-4 py-3 text-left transition-colors hover:bg-muted/50"
+                >
+                  <div className="flex flex-col gap-0.5 min-w-0">
+                    <span className="truncate text-sm font-medium leading-tight">
+                      {job.title}
+                    </span>
+                    <span className="truncate text-xs text-muted-foreground">
+                      {job.company}
+                    </span>
+                    <EvidenceSummaryBar job={job} />
+                  </div>
+                  <Badge
+                    variant="outline"
+                    className={cn("shrink-0 ml-4 text-[10px]", statusCfg.className)}
+                  >
+                    {statusCfg.label}
+                  </Badge>
+                </button>
+              )
+            })}
           </div>
-
-          {/* Job detail */}
-          {selected ? (
-            <ScrollArea className="flex-1">
-              <div className="mx-auto max-w-2xl px-6 py-6">
-                {/* Detail header */}
-                <div className="mb-5 flex items-start justify-between gap-4">
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2">
-                      <h2 className="truncate text-lg font-semibold">
-                        {selected.title}
-                      </h2>
-                      <Badge
-                        variant="outline"
-                        className={cn(
-                          "shrink-0 text-xs",
-                          STATUS_CONFIG[selected.status].className
-                        )}
-                      >
-                        {STATUS_CONFIG[selected.status].label}
-                      </Badge>
-                    </div>
-                    <p className="mt-0.5 text-sm text-muted-foreground">
-                      {selected.company}
-                    </p>
-                    {selected.url && (
-                      <a
-                        href={selected.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="mt-1 flex items-center gap-1 text-xs text-primary hover:underline"
-                      >
-                        <ExternalLinkIcon className="size-3" />
-                        View posting
-                      </a>
-                    )}
-                  </div>
-                  <div className="flex shrink-0 items-center gap-1">
-                    <Button
-                      size="icon-sm"
-                      variant="ghost"
-                      onClick={() => setEditOpen(true)}
-                      title="Edit job"
+        </ScrollArea>
+      ) : (
+        /* Full-page job detail: info left, requirements right */
+        <div className="flex flex-1 overflow-hidden">
+          {/* Left — job info */}
+          <ScrollArea className="w-1/2 shrink-0 border-r">
+            <div className="flex flex-col gap-5 p-6">
+              {/* Status + URL */}
+              <div className="flex flex-col gap-3">
+                <div className="flex items-center gap-2">
+                  <Badge
+                    variant="outline"
+                    className={cn("text-xs", STATUS_CONFIG[selected.status].className)}
+                  >
+                    {STATUS_CONFIG[selected.status].label}
+                  </Badge>
+                  {selected.url && (
+                    <a
+                      href={selected.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-1 text-xs text-primary hover:underline"
                     >
-                      <PencilIcon className="size-3.5" />
-                    </Button>
-                    <Button
-                      size="icon-sm"
-                      variant="ghost"
-                      onClick={() => handleDelete(selected.id)}
-                      title="Delete job"
-                    >
-                      <Trash2Icon className="size-3.5 text-destructive" />
-                    </Button>
-                  </div>
+                      <ExternalLinkIcon className="size-3" />
+                      View posting
+                    </a>
+                  )}
                 </div>
-
-                {/* Status quick-change */}
-                <div className="mb-5 flex items-center gap-3">
-                  <span className="text-xs font-medium text-muted-foreground">
-                    Status
-                  </span>
+                <div className="flex items-center gap-3">
+                  <span className="text-xs font-medium text-muted-foreground">Status</span>
                   <Select
                     value={selected.status}
                     onValueChange={(v) =>
@@ -275,131 +271,131 @@ export function Jobs() {
                     </SelectContent>
                   </Select>
                 </div>
+              </div>
 
-                {/* Description */}
-                {selected.description && (
-                  <>
-                    <Separator className="mb-5" />
-                    <div className="mb-5">
-                      <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                        Job Description
-                      </h3>
-                      <p className="whitespace-pre-wrap text-sm text-muted-foreground leading-relaxed">
-                        {selected.description}
-                      </p>
-                    </div>
-                  </>
-                )}
+              <Separator />
 
-                <Separator className="mb-5" />
+              {/* Description */}
+              {selected.description && (
+                <>
+                  <div>
+                    <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                      Job Description
+                    </h3>
+                    <p className="whitespace-pre-wrap text-sm text-muted-foreground leading-relaxed">
+                      {selected.description}
+                    </p>
+                  </div>
+                  <Separator />
+                </>
+              )}
 
-                {/* Linked CV */}
-                <div className="mb-5">
-                  <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                    Linked CV
-                  </h3>
-                  {selected.linkedCVId ? (
-                    (() => {
-                      const linkedDoc = documents.find(
-                        (d) => d.id === selected.linkedCVId
-                      )
-                      return linkedDoc ? (
-                        <div className="flex items-center gap-2 rounded-lg border bg-card px-3 py-2">
-                          <LinkIcon className="size-3.5 shrink-0 text-muted-foreground" />
-                          <span className="flex-1 truncate text-sm">
-                            {linkedDoc.name}
-                          </span>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            className="h-7 text-xs"
-                            onClick={() => {
-                              setActiveId(linkedDoc.id)
-                              navigate("/builder")
-                            }}
-                          >
-                            <WrenchIcon className="size-3" />
-                            Open
-                          </Button>
-                          <Button
-                            size="icon-sm"
-                            variant="ghost"
-                            onClick={() =>
-                              updateJob(selected.id, { linkedCVId: undefined })
-                            }
-                            title="Unlink CV"
-                          >
-                            <UnlinkIcon className="size-3.5 text-muted-foreground" />
-                          </Button>
-                        </div>
-                      ) : (
-                        <p className="text-xs text-muted-foreground">
-                          Linked CV was deleted.{" "}
-                          <button
-                            className="text-primary hover:underline"
-                            onClick={() =>
-                              updateJob(selected.id, { linkedCVId: undefined })
-                            }
-                          >
-                            Clear link
-                          </button>
-                        </p>
-                      )
-                    })()
-                  ) : (
-                    <div className="flex flex-wrap gap-2">
-                      {documents.length > 0 && (
-                        <Select
-                          onValueChange={(v) =>
-                            updateJob(selected.id, { linkedCVId: v })
+              {/* Linked CV */}
+              <div>
+                <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                  Linked CV
+                </h3>
+                {selected.linkedCVId ? (
+                  (() => {
+                    const linkedDoc = documents.find(
+                      (d) => d.id === selected.linkedCVId
+                    )
+                    return linkedDoc ? (
+                      <div className="flex items-center gap-2 rounded-lg border bg-card px-3 py-2">
+                        <LinkIcon className="size-3.5 shrink-0 text-muted-foreground" />
+                        <span className="flex-1 truncate text-sm">
+                          {linkedDoc.name}
+                        </span>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="h-7 text-xs"
+                          onClick={() => {
+                            setActiveId(linkedDoc.id)
+                            navigate("/builder")
+                          }}
+                        >
+                          <WrenchIcon className="size-3" />
+                          Open
+                        </Button>
+                        <Button
+                          size="icon-sm"
+                          variant="ghost"
+                          onClick={() =>
+                            updateJob(selected.id, { linkedCVId: undefined })
+                          }
+                          title="Unlink CV"
+                        >
+                          <UnlinkIcon className="size-3.5 text-muted-foreground" />
+                        </Button>
+                      </div>
+                    ) : (
+                      <p className="text-xs text-muted-foreground">
+                        Linked CV was deleted.{" "}
+                        <button
+                          className="text-primary hover:underline"
+                          onClick={() =>
+                            updateJob(selected.id, { linkedCVId: undefined })
                           }
                         >
-                          <SelectTrigger className="h-8 w-56 text-xs">
-                            <SelectValue placeholder="Attach existing CV..." />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {documents.map((d) => (
-                              <SelectItem key={d.id} value={d.id}>
-                                {d.name}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      )}
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        className="h-8 text-xs"
-                        onClick={handleCreateAndLinkCV}
+                          Clear link
+                        </button>
+                      </p>
+                    )
+                  })()
+                ) : (
+                  <div className="flex flex-col gap-2">
+                    {documents.length > 0 && (
+                      <Select
+                        onValueChange={(v) =>
+                          updateJob(selected.id, { linkedCVId: v })
+                        }
                       >
-                        <PlusIcon className="size-3" />
-                        Create new CV for this job
-                      </Button>
-                    </div>
-                  )}
-                </div>
-
-                <Separator className="mb-5" />
-
-                {/* Requirements */}
-                <div>
-                  <h3 className="mb-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                    Requirements
-                  </h3>
-                  <RequirementsPanel
-                    requirements={selected.requirements}
-                    onAdd={(text) => addRequirement(selected.id, text)}
-                    onUpdate={(reqId, data) =>
-                      updateRequirement(selected.id, reqId, data)
-                    }
-                    onDelete={(reqId) =>
-                      deleteRequirement(selected.id, reqId)
-                    }
-                  />
-                </div>
+                        <SelectTrigger className="h-8 text-xs">
+                          <SelectValue placeholder="Attach existing CV..." />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {documents.map((d) => (
+                            <SelectItem key={d.id} value={d.id}>
+                              {d.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    )}
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="h-8 text-xs"
+                      onClick={handleCreateAndLinkCV}
+                    >
+                      <PlusIcon className="size-3" />
+                      Create new CV for this job
+                    </Button>
+                  </div>
+                )}
               </div>
-            </ScrollArea>
-          ) : null}
+            </div>
+          </ScrollArea>
+
+          {/* Right — requirements */}
+          <ScrollArea className="flex-1">
+            <div className="p-6">
+              <h3 className="mb-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                Requirements
+              </h3>
+              <RequirementsPanel
+                requirements={selected.requirements}
+                onAdd={(text) => addRequirement(selected.id, text)}
+                onUpdate={(reqId, data) =>
+                  updateRequirement(selected.id, reqId, data)
+                }
+                onDelete={(reqId) =>
+                  deleteRequirement(selected.id, reqId)
+                }
+              />
+            </div>
+          </ScrollArea>
         </div>
       )}
 

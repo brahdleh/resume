@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import {
   PlusIcon,
   Trash2Icon,
@@ -8,7 +8,6 @@ import {
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
 import { cn } from "@/lib/utils"
 import type { JobRequirement, EvidenceLevel } from "@/types/jobs"
 
@@ -49,8 +48,17 @@ interface RequirementRowProps {
 }
 
 function RequirementRow({ req, onChange, onDelete }: RequirementRowProps) {
-  const [expanded, setExpanded] = useState(Boolean(req.notes))
   const cfg = EVIDENCE_CONFIG[req.evidenceLevel]
+  const textareaRef = useRef<HTMLTextAreaElement>(null)
+
+  const resize = (el: HTMLTextAreaElement) => {
+    el.style.height = "auto"
+    el.style.height = `${el.scrollHeight}px`
+  }
+
+  useEffect(() => {
+    if (textareaRef.current) resize(textareaRef.current)
+  }, [req.text])
 
   const cycleEvidence = () => {
     const idx = CYCLE.indexOf(req.evidenceLevel)
@@ -58,57 +66,39 @@ function RequirementRow({ req, onChange, onDelete }: RequirementRowProps) {
   }
 
   return (
-    <div className="group flex flex-col gap-1.5 rounded-lg border bg-card px-3 py-2.5">
-      <div className="flex items-center gap-2">
-        <button
-          onClick={cycleEvidence}
-          title="Click to cycle evidence level"
-          className={cn(
-            "flex shrink-0 items-center gap-1.5 rounded-md border px-2 py-0.5 text-xs font-medium transition-colors",
-            cfg.className
-          )}
-        >
-          <cfg.Icon className="size-3" />
-          {cfg.label}
-        </button>
+    <div className="group flex items-start gap-2 rounded-lg border bg-card px-3 py-2.5">
+      <button
+        onClick={cycleEvidence}
+        title="Click to cycle evidence level"
+        className={cn(
+          "mt-0.5 flex shrink-0 items-center gap-1.5 rounded-md border px-2 py-0.5 text-xs font-medium transition-colors",
+          cfg.className
+        )}
+      >
+        <cfg.Icon className="size-3" />
+        {cfg.label}
+      </button>
 
-        <Input
-          className="h-7 flex-1 border-0 bg-transparent px-0 text-sm shadow-none focus-visible:ring-0"
-          placeholder="Requirement or skill..."
-          value={req.text}
-          onChange={(e) => onChange({ text: e.target.value })}
-        />
+      <textarea
+        ref={textareaRef}
+        className="flex-1 resize-none overflow-hidden bg-transparent text-sm leading-relaxed text-foreground placeholder:text-muted-foreground focus:outline-none"
+        placeholder="Requirement or skill..."
+        value={req.text}
+        rows={1}
+        onChange={(e) => {
+          onChange({ text: e.target.value })
+          resize(e.target)
+        }}
+      />
 
-        <Button
-          size="icon-sm"
-          variant="ghost"
-          className="ml-auto shrink-0 opacity-0 transition-opacity group-hover:opacity-100"
-          onClick={onDelete}
-        >
-          <Trash2Icon className="size-3.5 text-destructive" />
-        </Button>
-      </div>
-
-      {expanded ? (
-        <Textarea
-          className="min-h-0 resize-none text-xs text-muted-foreground"
-          placeholder="Evidence notes..."
-          value={req.notes ?? ""}
-          onChange={(e) => onChange({ notes: e.target.value })}
-          rows={2}
-          onBlur={() => {
-            if (!req.notes) setExpanded(false)
-          }}
-          autoFocus
-        />
-      ) : (
-        <button
-          className="self-start text-xs text-muted-foreground/40 transition-colors hover:text-muted-foreground"
-          onClick={() => setExpanded(true)}
-        >
-          + add notes
-        </button>
-      )}
+      <Button
+        size="icon-sm"
+        variant="ghost"
+        className="mt-0.5 shrink-0 opacity-0 transition-opacity group-hover:opacity-100"
+        onClick={onDelete}
+      >
+        <Trash2Icon className="size-3.5 text-destructive" />
+      </Button>
     </div>
   )
 }

@@ -54,7 +54,7 @@ export const useJobStore = create<JobState>()(
                   updatedAt: new Date().toISOString(),
                   requirements: [
                     ...j.requirements,
-                    { id, text, evidenceLevel, notes: "" },
+                    { id, text, evidenceLevel },
                   ],
                 }
               : j
